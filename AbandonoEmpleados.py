@@ -84,3 +84,45 @@ estadisticos_cont(df.select_dtypes("number"))
 
 df.drop(columns=["empleados", "sexo", "horas_quincena"], inplace=True)
 
+
+## Generación de Insights ##
+
+# Cuantificación del problema: ¿Cual es la tasa de abandono?
+df["abandono"].value_counts(normalize=True) * 100
+
+# Transformar abandono a numérica
+df['abandono'] = df.abandono.map({'No':0, 'Yes':1})
+
+# Análisis de abandono por educación
+temp = df.groupby('educacion')["abandono"].mean().sort_values(ascending = False) * 100
+temp.plot.bar()
+plt.show()
+
+# Análisis de abandono por estado civil
+temp = df.groupby('estado_civil')["abandono"].mean().sort_values(ascending = False) * 100
+temp.plot.bar()
+plt.show()
+
+# Análisis de abandono por horas extras
+temp = df.groupby('horas_extra')["abandono"].mean().sort_values(ascending = False) * 100
+temp.plot.bar()
+plt.show()
+
+# Análisis de abandono por puesto
+temp = df.groupby('puesto')["abandono"].mean().sort_values(ascending = False) * 100
+temp.plot.bar()
+plt.show()
+
+# Análisis de abandono por salario
+temp = df.groupby('abandono')["salario_mes"].mean()
+temp.plot.bar()
+plt.show()
+
+''' # Conclusiones:
+    El perfil medio del empleado que deja la empresa es:
+    1. Bajo nivel educativo
+    2. Soltero
+    3. Trabaja en ventas
+    4. Bajo salario
+    5. Alta carga de horas extras '''
+
