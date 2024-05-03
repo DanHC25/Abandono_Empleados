@@ -47,8 +47,8 @@ def graficos_eda_categoricos(cat):
 
     plt.show()  # Mostramos la figura
 
-graficos_eda_categoricos(df_categorica.columns[0:8])
-graficos_eda_categoricos(df_categorica.columns[8:])
+graficos_eda_categoricos(df_categorica.columns[0:8]) # Gráfico eda 1
+graficos_eda_categoricos(df_categorica.columns[8:]) # Gráfico eda 2
 
 ''' # Conclusiones:
     1. Columna 'mayor de edad' solo tiene un valor: Eliminarlo
@@ -112,6 +112,7 @@ plt.show()
 # Análisis de abandono por puesto
 temp = df.groupby('puesto')["abandono"].mean().sort_values(ascending = False) * 100
 temp.plot.bar()
+plt.tight_layout()
 plt.show()
 
 # Análisis de abandono por salario
@@ -265,9 +266,10 @@ df.sort_values(by = 'scoring_abandono', ascending = False)[0:10]
 
 # Ejemplo: riesgo de dejar la empresa por puesto de trabajo
 df.boxplot(column='scoring_abandono', by='puesto', figsize = (20,12))
+plt.tight_layout()
 plt.show()
 
 # Guardamos el resultado
 
-df.to_csv('abandono_con_scoring.csv')
+df.to_excel('abandono_con_scoring.xlsx')
 
