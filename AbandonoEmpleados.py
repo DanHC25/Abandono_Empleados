@@ -165,5 +165,39 @@ print(f"Reducir un 20% la fuga de empleados nos ahorraría {int(coste_total * 0.
 print(f"Reducir un 30% la fuga de empleados nos ahorraría {int(coste_total * 0.3)}$ cada año.") # $815701
 
 
+## Modelo de Machine Learning ##
 
+df_ml = df.copy()
+df_ml.info()
+
+## Preparación de los Datos para la Modelización ##
+
+# Transformar todas las variables categóricas a númericas
+
+from sklearn.preprocessing import OneHotEncoder
+
+# Variables Categóricas
+cat = df_ml.select_dtypes('O')
+
+# Instanciamos
+ohe = OneHotEncoder()
+
+# Entrenamos
+ohe.fit(cat)
+
+# Aplicamos
+cat_ohe = ohe.transform(cat)
+
+# Convertimos la salida a una matriz densa
+cat_ohe = cat_ohe.toarray()
+
+# Ponemos los nombres a las columnas
+cat_ohe = pd.DataFrame(cat_ohe, columns = ohe.get_feature_names_out(input_features = cat.columns)).reset_index(drop = True)
+
+# Seleccionamos las variables numéricas para poder juntarlas a las cat_ohe
+num = df.select_dtypes('number').reset_index(drop = True)
+
+# Las juntamos todas en un dataframe final
+df_ml = pd.concat([cat_ohe,num], axis = 1)
+df_ml
 
