@@ -201,3 +201,73 @@ num = df.select_dtypes('number').reset_index(drop = True)
 df_ml = pd.concat([cat_ohe,num], axis = 1)
 df_ml
 
+
+## Diseño de Modelización ##
+
+# Separación de las características predictoras y las variables objetivo (target)
+x = df_ml.drop(columns='abandono')
+y = df_ml['abandono']
+
+# Separación del conjunto de entrenamiento(train) y test
+from sklearn.model_selection import train_test_split
+
+train_x, test_x, train_y, test_y = train_test_split(x, y, test_size = 0.3)
+
+# Entrenamiento del Modelo sobre Train
+from sklearn.tree import DecisionTreeClassifier
+
+# Instanciar
+ac = DecisionTreeClassifier(max_depth=4)
+
+# Entrenar
+ac.fit(train_x,train_y)
+
+## Predicción y Validación sobre Test ##
+
+# Predicción
+pred = ac.predict_proba(test_x)[:, 1]
+pred[:20]
+
+# Evaluación
+from sklearn.metrics import roc_auc_score
+
+roc_auc_score(test_y,pred)
+# Resultado: 0.7042088688399013
+
+
+## Interpretación ##
+
+# Diagrama del árbol
+from sklearn.tree import plot_tree
+
+plt.figure(figsize = (50,50))
+
+plot_tree(ac,
+          feature_names= test_x.columns,
+          impurity = False,
+          node_ids = True,
+          proportion = True,
+          rounded = True,
+          precision = 2)
+
+plt.tight_layout()
+plt.show()
+
+# Importancia de las variables
+pd.Series(ac.feature_importances_,index = test_x.columns).sort_values(ascending = False).plot(kind = 'bar', figsize = (30,20))
+
+# Incoporación del scoring al dataframe principal
+df['scoring_abandono'] = ac.predict_proba(df_ml.drop(columns = 'abandono'))[:, 1]
+df
+
+# Ejemplo de los 10 empleados con mayor probabilidad de dejar la empresa
+df.sort_values(by = 'scoring_abandono', ascending = False)[0:10]
+
+# Ejemplo: riesgo de dejar la empresa por puesto de trabajo
+df.boxplot(column='scoring_abandono', by='puesto', figsize = (20,12))
+plt.show()
+
+# Guardamos el resultado
+
+df.to_csv('abandono_con_scoring.csv')
+
